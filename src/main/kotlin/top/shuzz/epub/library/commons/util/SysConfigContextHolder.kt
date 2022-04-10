@@ -19,17 +19,27 @@ class SysConfigContextHolder {
         /**
          * 配置项-文件上传存储根目录
          */
-        val UPLOADED_FILE_DIR = "UPLOADED_FILE_DIR"
+        const val UPLOADED_FILE_DIR = "UPLOADED_FILE_DIR"
 
         /**
          * 配置项-用户数据根目录
          */
-        val USER_DATA_ROOT_DIR = "USER_DATA_ROOT_DIR"
+        const val USER_DATA_ROOT_DIR = "USER_DATA_ROOT_DIR"
 
         /**
          * 配置项-系统数据根路径
          */
-        val ROOT_PATH = "ROOT_PATH"
+        const val ROOT_PATH = "ROOT_PATH"
+
+        /**
+         * 默认值-用户数据根目录
+         */
+        private const val USER_DATA_ROOT_DIR_DEFAULT = "/data"
+
+        /**
+         * 默认值-文件上传存储根目录
+         */
+        private const val UPLOADED_FILE_DIR_DEFAULT = "/uploaded"
 
         /**
          * 设置配置参数到系统运行时
@@ -47,7 +57,34 @@ class SysConfigContextHolder {
          * @return 字符串类型值(默认)
          */
         fun getConfig(key: String): String? {
-            return SYS_CONFIG_MAP[key]
+            return when(key) {
+                UPLOADED_FILE_DIR -> {
+                    var value = SYS_CONFIG_MAP[key]
+                    if (value == null) {
+                        value = UPLOADED_FILE_DIR_DEFAULT
+                        log.warn("Cannot Find Config [$UPLOADED_FILE_DIR], Using Default Value: $value")
+                    }
+                    return value
+                }
+                USER_DATA_ROOT_DIR -> {
+                    var value = SYS_CONFIG_MAP[key]
+                    if (value == null) {
+                        value = USER_DATA_ROOT_DIR_DEFAULT
+                        log.warn("Cannot Find Config [$USER_DATA_ROOT_DIR], Using Default Value: $value")
+                    }
+                    return value
+                }
+                ROOT_PATH -> {
+                    var value = SYS_CONFIG_MAP[key]
+                    if (value == null) {
+                        value = System.getProperty("user.dir")
+                        log.warn("Cannot Find Config [$ROOT_PATH], Using Default Value: $value")
+                    }
+
+                    return value
+                }
+                else -> SYS_CONFIG_MAP[key]
+            }
         }
 
         /**
@@ -56,7 +93,7 @@ class SysConfigContextHolder {
          * @return 布尔类型值
          */
         fun getConfigBoolean(key: String): Boolean? {
-            return SYS_CONFIG_MAP[key]?.toBoolean()
+            return this.getConfig(key)?.toBoolean()
         }
 
         /**
@@ -65,7 +102,7 @@ class SysConfigContextHolder {
          * @return 整数类型值
          */
         fun getConfigInteger(key: String): Int? {
-            return SYS_CONFIG_MAP[key]?.toInt()
+            return this.getConfig(key)?.toInt()
         }
 
         /**
@@ -74,7 +111,7 @@ class SysConfigContextHolder {
          * @return 长整型类型值
          */
         fun getConfigLong(key: String): Long? {
-            return SYS_CONFIG_MAP[key]?.toLong()
+            return this.getConfig(key)?.toLong()
         }
     }
 }
