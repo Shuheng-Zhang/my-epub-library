@@ -13,8 +13,8 @@ spring:
     # 启用文件上传
     multipart:
       enabled: true
-      max-file-size: 30MB
-      max-request-size: 4GB
+      max-file-size: 300MB
+      max-request-size: 1GB
   # 配置 JSON 时间序列化
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
