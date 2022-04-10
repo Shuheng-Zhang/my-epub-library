@@ -13,6 +13,11 @@ enum class ErrorEnum(code: Int, msg: String): BaseResponseEnum {
     PARAMS_INVALID(400, "PARAMS_INVALID"),
 
     /**
+     * 拒绝重复对象
+     */
+    DUPLICATED_OBJECT_REFUSED(400, "DUPLICATED_OBJECT_REFUSED"),
+
+    /**
      * 不受支持文件类型错误
      */
     UNSUPPORTED_FILES_ERROR(400, "UNSUPPORTED_FILES_ERROR"),
