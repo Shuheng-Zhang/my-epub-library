@@ -1,5 +1,6 @@
 package top.shuzz.epub.library.commons.util
 
+import cn.hutool.log.LogFactory
 import java.util.concurrent.ConcurrentHashMap
 
 /**
@@ -10,6 +11,8 @@ import java.util.concurrent.ConcurrentHashMap
 class SysConfigContextHolder {
 
     companion object {
+
+        private val log = LogFactory.get()
 
         private val SYS_CONFIG_MAP = ConcurrentHashMap<String, String?>()
 
@@ -35,6 +38,7 @@ class SysConfigContextHolder {
          */
         fun setConfig(key: String, value: String?) {
             SYS_CONFIG_MAP[key] = value
+            log.info("Loaded SysConfig [$key: $value]")
         }
 
         /**

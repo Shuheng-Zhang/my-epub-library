@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl
 import org.springframework.stereotype.Service
 import top.shuzz.epub.library.commons.exception.ServiceException
 import top.shuzz.epub.library.commons.response.enums.ErrorEnum
+import top.shuzz.epub.library.commons.util.SysConfigContextHolder
 import top.shuzz.epub.library.modular.dto.SysConfigDto
 import top.shuzz.epub.library.modular.dto.SysConfigQueryDto
 import top.shuzz.epub.library.modular.entity.SysConfig
@@ -60,6 +61,10 @@ class SysConfigService: ServiceImpl<SysConfigMapper, SysConfig>() {
             val config = SysConfig()
             BeanUtil.copyProperties(it, config, "id")
             this.save(config)
+
+            // 新建配置项存储到数据库后, 将该项写入到运行时环境
+            SysConfigContextHolder.setConfig(config.configKey!!, config.configValue)
+
         }
     }
 
@@ -69,12 +74,25 @@ class SysConfigService: ServiceImpl<SysConfigMapper, SysConfig>() {
     fun updateSysConfig(sysConfigDto: SysConfigDto) {
         sysConfigDto.id ?: throw ServiceException(ErrorEnum.PARAMS_INVALID, "SysConfig.id Cannot be Empty.")
 
+        var isValueUpdated = false
+        var targetConfigKey: String? = null
         this.getById(sysConfigDto.id?.toLong())?.let { config ->
+            targetConfigKey = config.configKey
             sysConfigDto.configName?.let { config.configName = it }
-            sysConfigDto.configValue?.let { config.configValue = it }
+            sysConfigDto.configValue?.let {
+                config.configValue = it
+                isValueUpdated = true
+            }
             if (StrUtil.isNotBlank(sysConfigDto.configDescription)) config.configDescription = sysConfigDto.configDescription
 
+            config.updateTime = null
+
             this.updateById(config)
+        }
+
+        // 当配置项的值更新后, 同时更新运行时环境中的配置值
+        if (isValueUpdated) {
+            SysConfigContextHolder.setConfig(targetConfigKey!!, sysConfigDto.configValue)
         }
 
     }

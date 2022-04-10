@@ -1,6 +1,5 @@
 package top.shuzz.epub.library.commons.launcher
 
-import cn.hutool.log.LogFactory
 import org.springframework.boot.ApplicationArguments
 import org.springframework.boot.ApplicationRunner
 import org.springframework.stereotype.Component
@@ -19,8 +18,6 @@ import top.shuzz.epub.library.commons.util.SysConfigContextHolder
 @Component
 class SysConfigInitLauncher: ApplicationRunner {
 
-    private val log = LogFactory.get()
-
     @Lazy
     @Resource
     private lateinit var sysConfigService: SysConfigService
@@ -29,7 +26,6 @@ class SysConfigInitLauncher: ApplicationRunner {
 
         sysConfigService.list().forEach {
             SysConfigContextHolder.setConfig(it.configKey!!, it.configValue)
-            log.info("Loaded SysConfig [${it.configKey}: ${it.configValue}]")
         }
 
     }
