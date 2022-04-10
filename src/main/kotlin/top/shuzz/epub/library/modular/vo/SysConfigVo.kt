@@ -1,5 +1,6 @@
 package top.shuzz.epub.library.modular.vo
 
+import com.fasterxml.jackson.annotation.JsonFormat
 import java.time.LocalDateTime
 
 /**
@@ -30,10 +31,10 @@ data class SysConfigVo(
     /**
      * 创建时间
      */
-    var createdTime: LocalDateTime? = null,
+    @JsonFormat( pattern = "yyyy-MM-dd HH:mm:ss") var createdTime: LocalDateTime? = null,
     /**
      * 更新时间
      */
-    var updateTime: LocalDateTime? = null
+    @JsonFormat( pattern = "yyyy-MM-dd HH:mm:ss") var updateTime: LocalDateTime? = null
 
 )
