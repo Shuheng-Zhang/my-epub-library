@@ -45,6 +45,7 @@ class SysConfigContextHolder {
          * 设置配置参数到系统运行时
          * @param key 配置项键名
          * @param value 配置项值
+         * @param usingDefault 是否使用默认值(配置值缺失时使用默认值)
          */
         fun setConfig(key: String, value: String?, usingDefault: Boolean = false) {
             if (usingDefault) {
