@@ -34,21 +34,39 @@ class SysConfigContextHolder {
         /**
          * 默认值-用户数据根目录
          */
-        private const val USER_DATA_ROOT_DIR_DEFAULT = "/data"
+        const val USER_DATA_ROOT_DIR_DEFAULT = "/data"
 
         /**
          * 默认值-文件上传存储根目录
          */
-        private const val UPLOADED_FILE_DIR_DEFAULT = "/uploaded"
+        const val UPLOADED_FILE_DIR_DEFAULT = "/uploaded"
 
         /**
          * 设置配置参数到系统运行时
          * @param key 配置项键名
          * @param value 配置项值
          */
-        fun setConfig(key: String, value: String?) {
+        fun setConfig(key: String, value: String?, usingDefault: Boolean = false) {
+            if (usingDefault) {
+                log.warn("Loaded SysConfig [$key: $value] (Using Default Value)")
+            } else {
+                log.info("Loaded SysConfig [$key: $value]")
+            }
             SYS_CONFIG_MAP[key] = value
-            log.info("Loaded SysConfig [$key: $value]")
+        }
+
+        /**
+         * 获取文件上传存储目录路径
+         */
+        fun getUploadedFileDir(): String {
+            return this.getConfig(ROOT_PATH) + this.getConfig(UPLOADED_FILE_DIR)
+        }
+
+        /**
+         * 获取用户数据根目录
+         */
+        fun getUserDataRootDir(): String {
+            return this.getConfig(ROOT_PATH) + this.getConfig(USER_DATA_ROOT_DIR)
         }
 
         /**
@@ -57,34 +75,7 @@ class SysConfigContextHolder {
          * @return 字符串类型值(默认)
          */
         fun getConfig(key: String): String? {
-            return when(key) {
-                UPLOADED_FILE_DIR -> {
-                    var value = SYS_CONFIG_MAP[key]
-                    if (value == null) {
-                        value = UPLOADED_FILE_DIR_DEFAULT
-                        log.warn("Cannot Find Config [$UPLOADED_FILE_DIR], Using Default Value: $value")
-                    }
-                    return value
-                }
-                USER_DATA_ROOT_DIR -> {
-                    var value = SYS_CONFIG_MAP[key]
-                    if (value == null) {
-                        value = USER_DATA_ROOT_DIR_DEFAULT
-                        log.warn("Cannot Find Config [$USER_DATA_ROOT_DIR], Using Default Value: $value")
-                    }
-                    return value
-                }
-                ROOT_PATH -> {
-                    var value = SYS_CONFIG_MAP[key]
-                    if (value == null) {
-                        value = System.getProperty("user.dir")
-                        log.warn("Cannot Find Config [$ROOT_PATH], Using Default Value: $value")
-                    }
-
-                    return value
-                }
-                else -> SYS_CONFIG_MAP[key]
-            }
+            return SYS_CONFIG_MAP[key]
         }
 
         /**
