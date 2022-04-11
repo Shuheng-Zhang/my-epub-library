@@ -1,5 +1,6 @@
 package top.shuzz.epub.library.commons.util
 
+import cn.hutool.core.util.StrUtil
 import cn.hutool.log.LogFactory
 import java.util.concurrent.ConcurrentHashMap
 
@@ -34,40 +35,56 @@ class SysConfigContextHolder {
         /**
          * 默认值-用户数据根目录
          */
-        const val USER_DATA_ROOT_DIR_DEFAULT = "/data"
+        private const val USER_DATA_ROOT_DIR_DEFAULT = "/data"
 
         /**
          * 默认值-文件上传存储根目录
          */
-        const val UPLOADED_FILE_DIR_DEFAULT = "/uploaded"
+        private const val UPLOADED_FILE_DIR_DEFAULT = "/uploaded"
 
         /**
          * 设置配置参数到系统运行时
          * @param key 配置项键名
          * @param value 配置项值
-         * @param usingDefault 是否使用默认值(配置值缺失时使用默认值)
          */
-        fun setConfig(key: String, value: String?, usingDefault: Boolean = false) {
-            if (usingDefault) {
-                log.warn("Loaded SysConfig [$key: $value] (Using Default Value)")
-            } else {
+        fun setConfig(key: String, value: String?) {
+            value?.let {
                 log.info("Loaded SysConfig [$key: $value]")
+                SYS_CONFIG_MAP[key] = value
             }
-            SYS_CONFIG_MAP[key] = value
         }
 
         /**
          * 获取文件上传存储目录路径
          */
         fun getUploadedFileDir(): String {
-            return this.getConfig(ROOT_PATH) + this.getConfig(UPLOADED_FILE_DIR)
+            val root = this.getRootPath()
+            var uploadedFileDir = this.getConfig(UPLOADED_FILE_DIR)
+            if (StrUtil.isEmptyIfStr(uploadedFileDir)) {
+                uploadedFileDir = UPLOADED_FILE_DIR_DEFAULT
+
+                SYS_CONFIG_MAP[UPLOADED_FILE_DIR] = uploadedFileDir
+                log.warn("Failed to Fetch Value of Config [$UPLOADED_FILE_DIR], Use Default: $uploadedFileDir")
+            }
+
+            return root + uploadedFileDir
         }
 
         /**
          * 获取用户数据根目录
          */
         fun getUserDataRootDir(): String {
-            return this.getConfig(ROOT_PATH) + this.getConfig(USER_DATA_ROOT_DIR)
+            val root = this.getRootPath()
+            var userDataDir = this.getConfig(USER_DATA_ROOT_DIR)
+            if (StrUtil.isEmptyIfStr(userDataDir)) {
+                userDataDir = USER_DATA_ROOT_DIR_DEFAULT
+
+                SYS_CONFIG_MAP[USER_DATA_ROOT_DIR] = userDataDir
+                log.warn("Failed to Fetch Value of Config [$USER_DATA_ROOT_DIR], Use Default: $userDataDir")
+            }
+
+            return root + userDataDir
+
         }
 
         /**
@@ -105,5 +122,21 @@ class SysConfigContextHolder {
         fun getConfigLong(key: String): Long? {
             return this.getConfig(key)?.toLong()
         }
+
+        /**
+         * 获取系统根路径
+         */
+        private fun getRootPath(): String {
+            var root = this.getConfig(ROOT_PATH)
+            if (StrUtil.isEmptyIfStr(root)) {
+                root = System.getProperty("user.dir")
+
+                SYS_CONFIG_MAP[ROOT_PATH] = root
+                log.warn("Failed to Fetch Value of Config [$ROOT_PATH], Use Default: $root")
+            }
+
+            return root!!
+        }
+
     }
 }

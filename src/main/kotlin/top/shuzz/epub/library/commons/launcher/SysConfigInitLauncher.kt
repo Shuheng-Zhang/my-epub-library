@@ -1,7 +1,6 @@
 package top.shuzz.epub.library.commons.launcher
 
 import cn.hutool.core.io.FileUtil
-import cn.hutool.core.util.StrUtil
 import cn.hutool.log.LogFactory
 import org.springframework.boot.ApplicationArguments
 import org.springframework.boot.ApplicationRunner
@@ -40,23 +39,7 @@ class SysConfigInitLauncher: ApplicationRunner {
      */
     private fun loadSysConfigs() {
         sysConfigService.list().forEach { config ->
-            when(val key = config.configKey) {
-                SysConfigContextHolder.ROOT_PATH -> {
-                    val value = config.configValue ?: System.getProperty("user.dir")
-                    SysConfigContextHolder.setConfig(key, value, StrUtil.isEmptyIfStr(config.configValue))
-                }
-                SysConfigContextHolder.USER_DATA_ROOT_DIR -> {
-                    val value = config.configValue ?: SysConfigContextHolder.USER_DATA_ROOT_DIR_DEFAULT
-                    SysConfigContextHolder.setConfig(key, value, StrUtil.isEmptyIfStr(config.configValue))
-                }
-                SysConfigContextHolder.UPLOADED_FILE_DIR -> {
-                    val value = config.configValue ?: SysConfigContextHolder.UPLOADED_FILE_DIR_DEFAULT
-                    SysConfigContextHolder.setConfig(key, value, StrUtil.isEmptyIfStr(config.configValue))
-                }
-                else -> {
-                    SysConfigContextHolder.setConfig(key!!, config.configValue)
-                }
-            }
+            SysConfigContextHolder.setConfig(config.configKey!!, config.configValue)
         }
     }
 
