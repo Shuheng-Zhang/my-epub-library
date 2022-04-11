@@ -40,3 +40,16 @@ mybatis-plus:
     map-underscore-to-camel-case: true
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
   mapper-locations: classpath*:mapper/*Mapper.xml
+
+# 配置 异步任务执行器(AsyncTaskExecutor)
+async-task-executor:
+  # 核心线程数
+  core-pool-size: 8
+  # 最大线程数
+  max-pool-size: 16
+  # 任务队列容量
+  queue-capacity: 32
+  # 线程保活时长(秒)
+  keep-alive-seconds: 60
+  # 线程前缀名
+  prefix-name: "async-task-executor-"
