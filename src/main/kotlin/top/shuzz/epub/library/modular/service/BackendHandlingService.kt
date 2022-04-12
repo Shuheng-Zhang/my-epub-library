@@ -10,6 +10,7 @@ import javax.annotation.Resource
 import org.springframework.context.annotation.Lazy
 import top.shuzz.epub.library.commons.util.SysConfigContextHolder
 import top.shuzz.epub.library.modular.dto.BookFileNamesDto
+import top.shuzz.epub.library.modular.entity.AccountBookLink
 import top.shuzz.epub.library.modular.entity.BookBaseInfo
 import top.shuzz.epub.library.modular.entity.BookDescription
 import top.shuzz.epub.library.modular.entity.BookFileInfo
@@ -22,6 +23,10 @@ import java.io.File
  */
 @Service
 class BackendHandlingService {
+
+    @Lazy
+    @Resource
+    private lateinit var accountBookLinkService: AccountBookLinkService
 
     @Lazy
     @Resource
@@ -87,8 +92,11 @@ class BackendHandlingService {
             // 存储书目简介
             if (StrUtil.isNotBlank(result.bookDescription)) this.bookDescriptionService.save(BookDescription(bookFileId = bookFileId, bookDescription = result.bookDescription))
 
+            // 创建书目与用户账号关联
+            val link = AccountBookLink(accountId = backendHandleDto.accountId?.toLong(), bookFileId = bookFileId)
+            this.accountBookLinkService.save(link)
+
             // todo: 获取并存储 ePub 封面
-            // todo: 创建书目与用户账号关联
 
         }
     }
