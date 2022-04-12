@@ -77,11 +77,14 @@ class BackendHandlingService {
             // 执行解析
             val result = epubFileService.parseEpubFile(backendHandleDto.accountId, it)
 
+            // 获取封面
+            val cover = epubFileService.fetchEpubCover(backendHandleDto.accountId, it.storedFileName)
+
             // 存储书目文件信息
             val bookFileId = IdUtil.getSnowflakeNextId()
             val bookFileInfo = BookFileInfo(id = bookFileId,
                 bookFileName = it.storedFileName, bookFileOriginalName = it.originalFileName,
-                bookCoverUrl = result.coverUrl, bookOpfUrl = result.opfUrl,
+                bookCoverUrl = result.coverUrl, bookOpfUrl = result.opfUrl, bookCoverOutsideUrl = cover,
                 bookFileSize = fileSize)
             this.bookFileInfoService.save(bookFileInfo)
 
@@ -95,9 +98,6 @@ class BackendHandlingService {
             // 创建书目与用户账号关联
             val link = AccountBookLink(accountId = backendHandleDto.accountId?.toLong(), bookFileId = bookFileId)
             this.accountBookLinkService.save(link)
-
-            // todo: 获取并存储 ePub 封面
-
         }
     }
 

@@ -1,6 +1,7 @@
 package top.shuzz.epub.library.modular.service
 
 import cn.hutool.core.io.FileUtil
+import cn.hutool.core.util.IdUtil
 import cn.hutool.core.util.StrUtil
 import nl.siegmann.epublib.domain.Author
 import nl.siegmann.epublib.domain.Book
@@ -56,6 +57,29 @@ class EpubFileService {
         if (epubIds.isNotEmpty()) epubUid = epubIds[0].value
 
         return EpubMetaInfoDto(bookTitle, authors, description, epubUid, coverUrl, opfUrl)
+    }
+
+    /**
+     * 获取并存储封面
+     */
+    fun fetchEpubCover(accountId: String?, epubFile: String?): String? {
+        epubFile ?: throw ServiceException(ErrorEnum.PARAMS_INVALID, "ePub File Name Info Cannot be Empty.")
+        accountId ?: throw ServiceException(ErrorEnum.PARAMS_INVALID, "accountId Cannot be Empty.")
+
+        val filePath = SysConfigContextHolder.getUserDataRootDir() + "/" + accountId + "/" + epubFile
+        if (!FileUtil.exist(filePath)) throw ServiceException(ErrorEnum.PARAMS_INVALID, "Cannot Find File: $epubFile")
+
+        val epubBook = this.loadEpubFile(filePath)
+        epubBook.coverImage?.let {
+            val extName = it.mediaType.defaultExtension
+            val coverFileName = IdUtil.getSnowflakeNextIdStr() + extName
+            val coverFilePath = SysConfigContextHolder.getCoverFileDir(accountId) + "/" + coverFileName
+            FileUtil.writeBytes(it.data, coverFilePath)
+
+            return coverFileName
+        }
+
+        return null
     }
 
     /**

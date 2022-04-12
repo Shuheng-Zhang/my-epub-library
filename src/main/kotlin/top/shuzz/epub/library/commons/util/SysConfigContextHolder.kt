@@ -28,6 +28,11 @@ class SysConfigContextHolder {
         const val USER_DATA_ROOT_DIR = "USER_DATA_ROOT_DIR"
 
         /**
+         * 配置项-书目封面存储目录
+         */
+        const val COVER_FILE_DIR = "COVER_FILE_DIR"
+
+        /**
          * 配置项-系统数据根路径
          */
         const val ROOT_PATH = "ROOT_PATH"
@@ -41,6 +46,11 @@ class SysConfigContextHolder {
          * 默认值-文件上传存储根目录
          */
         private const val UPLOADED_FILE_DIR_DEFAULT = "/uploaded"
+
+        /**
+         * 默认值-书目封面存储目录
+         */
+        private const val COVER_FILE_DIR_DEFAULT = "/covers"
 
         /**
          * 设置配置参数到系统运行时
@@ -85,6 +95,21 @@ class SysConfigContextHolder {
 
             return root + userDataDir
 
+        }
+
+        /**
+         * 获取用户数据-封面文件目录
+         */
+        fun getCoverFileDir(accountId: String): String {
+            val userDataDir = this.getUserDataRootDir()
+            var coverFileDir = this.getConfig(COVER_FILE_DIR)
+            if (StrUtil.isEmptyIfStr(coverFileDir)) {
+                coverFileDir = COVER_FILE_DIR_DEFAULT
+                SYS_CONFIG_MAP[COVER_FILE_DIR] = coverFileDir
+                log.warn("Failed to Fetch Value of Config [$COVER_FILE_DIR], Use Default: $coverFileDir")
+            }
+
+            return "$userDataDir/$accountId/$coverFileDir"
         }
 
         /**
