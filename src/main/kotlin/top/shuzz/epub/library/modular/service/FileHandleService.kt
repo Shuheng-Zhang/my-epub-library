@@ -71,7 +71,6 @@ class FileHandleService {
 
         fileList ?: return listOf()
 
-        // todo: 连接数据库获取用户ID
         // 检查或创建用户数据目录
         val accountDataDir = this.checkAccountDataDir(accountId!!)
 
