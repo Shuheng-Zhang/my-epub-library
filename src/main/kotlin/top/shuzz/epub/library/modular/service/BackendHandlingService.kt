@@ -36,8 +36,9 @@ class BackendHandlingService {
     @Async("async-task-executor")
     fun execFileBackendHandle(backendHandleDto: FileBackendHandleDto) {
 
-        // 将文件移动到用户数据目录
+        // 获取待移动文件列表
         val movementDto = fileHandleService.getFileMovementList(backendHandleDto)
+        // 将文件移动到用户数据目录
         val movedFileList = fileHandleService.moveFilesToAccountDataDir(movementDto.accountId, movementDto.fileList)
 
         // 从已移动文件中筛选可解析文件列表
