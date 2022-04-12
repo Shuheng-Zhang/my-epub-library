@@ -6,6 +6,12 @@ package top.shuzz.epub.library.modular.dto
  * @since 2022/4/12
  */
 data class FileBackendHandleDto(
+    /**
+     * 用户账号ID
+     */
     var accountId: String? = null,
+    /**
+     * 待处理文件列表
+     */
     var fileList: MutableList<BookFileNamesDto>? = null
 )
