@@ -88,6 +88,19 @@ class FileHandleService {
     }
 
     /**
+     * 移除上传文件
+     * @param files 目标文件列表
+     */
+    fun removeFilesFromUploadedDir(files: List<String>) {
+        val fileDirPath = SysConfigContextHolder.getUploadedFileDir()
+        files.forEach {
+            val file = File("$fileDirPath/$it")
+            val isRemoved = FileUtil.del(file)
+            if (isRemoved) log.info("Removed Uploaded File: {}", file.name)
+        }
+    }
+
+    /**
      * 获取文件移动列表
      */
     fun getFileMovementList(backendHandleDto: FileBackendHandleDto): AccountFilesMovementDto {

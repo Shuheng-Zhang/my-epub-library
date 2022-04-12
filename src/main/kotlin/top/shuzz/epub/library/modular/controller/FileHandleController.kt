@@ -11,6 +11,7 @@ import top.shuzz.epub.library.modular.dto.FileBackendHandleDto
 import top.shuzz.epub.library.modular.service.FileHandleService
 import javax.annotation.Resource
 import org.springframework.context.annotation.Lazy
+import org.springframework.web.bind.annotation.DeleteMapping
 import top.shuzz.epub.library.modular.service.BackendHandlingService
 
 /**
@@ -33,6 +34,12 @@ class FileHandleController {
     fun uploadFiles(@RequestPart(value = "files", required = true) files: List<MultipartFile>): ResponseData {
         val stored = this.fileHandleService.moveFilesToUploadedDir(files)
         return ResponseData.success(stored)
+    }
+
+    @DeleteMapping(value = ["remove-uploaded"])
+    fun removeUploadedFiles(@RequestBody fileList: List<String>): ResponseData {
+        this.fileHandleService.removeFilesFromUploadedDir(fileList)
+        return ResponseData.success()
     }
 
 
