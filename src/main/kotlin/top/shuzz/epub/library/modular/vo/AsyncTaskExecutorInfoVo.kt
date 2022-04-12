@@ -6,6 +6,12 @@ package top.shuzz.epub.library.modular.vo
  * @since 2022/4/12
  */
 data class AsyncTaskExecutorInfoVo(
+    /**
+     * 任务总数
+     */
     var taskCount: Long? = null,
+    /**
+     * 已完成任务数
+     */
     var completedCount: Long? = null
 )
