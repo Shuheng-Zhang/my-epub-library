@@ -10,6 +10,7 @@ import top.shuzz.epub.library.commons.exception.ServiceException
 import top.shuzz.epub.library.commons.response.enums.ErrorEnum
 import top.shuzz.epub.library.commons.util.SysConfigContextHolder
 import top.shuzz.epub.library.modular.dto.EpubMetaInfoDto
+import top.shuzz.epub.library.modular.dto.UploadedFileInfoDto
 import java.io.FileInputStream
 
 /**
@@ -19,24 +20,28 @@ import java.io.FileInputStream
 @Service
 class EpubFileService {
 
+    companion object {
+        private const val EPUB_EXT = ".epub"
+    }
+
     /**
      * 解析 ePub 文件
      * @param accountId 用户账号ID
      * @param epubFile 目标文件
      */
-    fun parseEpubFile(accountId: String?, epubFile: String?): EpubMetaInfoDto {
+    fun parseEpubFile(accountId: String?, epubFile: UploadedFileInfoDto?): EpubMetaInfoDto {
         epubFile ?: throw ServiceException(ErrorEnum.PARAMS_INVALID, "ePub File Path Cannot be Empty.")
         accountId ?: throw ServiceException(ErrorEnum.PARAMS_INVALID, "accountId Cannot be Empty.")
 
         // todo 通过数据库检查用户账号ID
 
-        val filePath = SysConfigContextHolder.getUserDataRootDir() + "/" + accountId + "/" + epubFile
-        if (!FileUtil.exist(filePath)) throw ServiceException(ErrorEnum.PARAMS_INVALID, "Cannot Find File: $epubFile")
+        val filePath = SysConfigContextHolder.getUserDataRootDir() + "/" + accountId + "/" + epubFile.storedFileName
+        if (!FileUtil.exist(filePath)) throw ServiceException(ErrorEnum.PARAMS_INVALID, "Cannot Find File: ${epubFile.storedFileName}")
 
         val epubBook = this.loadEpubFile(filePath)
 
         // 书目标题
-        val bookTitle = epubBook.title ?: "Untitled"
+        val bookTitle = epubBook.title ?: this.parseDefaultTitle(epubFile.originalFileName)
         // 书目作者
         val authors = this.parseAuthors(epubBook.metadata.authors)
         // 书目简介
@@ -95,5 +100,18 @@ class EpubFileService {
         descriptions.forEach { builder.append(it) }
 
         return builder.toString()
+    }
+
+    /**
+     * 处理默认标题(使用文件名作为默认标题)
+     */
+    private fun parseDefaultTitle(src: String?): String {
+        if (StrUtil.isEmptyIfStr(src)) return "Untitled"
+
+        src?.let {
+            return src.substringBefore(EPUB_EXT)
+        }
+
+        return "Untitled"
     }
 }
