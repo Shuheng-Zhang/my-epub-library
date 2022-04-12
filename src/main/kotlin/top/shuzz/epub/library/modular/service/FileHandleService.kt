@@ -9,7 +9,7 @@ import org.springframework.web.multipart.MultipartFile
 import top.shuzz.epub.library.commons.exception.ServiceException
 import top.shuzz.epub.library.commons.response.enums.ErrorEnum
 import top.shuzz.epub.library.commons.util.SysConfigContextHolder
-import top.shuzz.epub.library.modular.dto.UploadedFileInfoDto
+import top.shuzz.epub.library.modular.vo.UploadedFileInfoVo
 import java.io.File
 
 /**
@@ -31,7 +31,7 @@ class FileHandleService {
     /**
      * 存储文件到上传目录
      */
-    fun moveFilesToUploadedDir(files: List<MultipartFile>): List<UploadedFileInfoDto> {
+    fun moveFilesToUploadedDir(files: List<MultipartFile>): List<UploadedFileInfoVo> {
 
         if (!this.checkFileType(files)) {
             throw ServiceException(ErrorEnum.UNSUPPORTED_FILES_ERROR, "Type (*.epub) Supported Only.")
@@ -41,7 +41,7 @@ class FileHandleService {
             SysConfigContextHolder.getConfig(SysConfigContextHolder.UPLOADED_FILE_DIR)
         }"
 
-        val storedFileList = mutableListOf<UploadedFileInfoDto>()
+        val storedFileList = mutableListOf<UploadedFileInfoVo>()
         files.forEach {
             try {
                 val destFileName = IdUtil.getSnowflakeNextIdStr() + EPUB_EXT
@@ -50,7 +50,7 @@ class FileHandleService {
 
                 it.transferTo(destFile)
 
-                storedFileList.add(UploadedFileInfoDto(it.originalFilename, destFileName))
+                storedFileList.add(UploadedFileInfoVo(it.originalFilename, destFileName, it.size))
             } catch (e : Exception) {
                 throw ServiceException(ErrorEnum.SYS_ERROR, e.message ?: e.javaClass.name)
             }
