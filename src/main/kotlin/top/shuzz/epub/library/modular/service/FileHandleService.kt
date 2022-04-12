@@ -71,7 +71,7 @@ class FileHandleService {
 
         fileList ?: return listOf()
 
-        // 检查或创建用户数据目录
+        // 检查或创建用户书目目录
         val accountBookDir = this.checkAccountBookDir(accountId!!)
 
         // 将文件移动到用户数据目录
