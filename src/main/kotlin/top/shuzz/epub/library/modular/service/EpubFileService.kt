@@ -36,7 +36,7 @@ class EpubFileService {
         epubFile.originalFileName ?: throw ServiceException(ErrorEnum.PARAMS_INVALID, "ePub Original File Name Cannot be Empty.")
         accountId ?: throw ServiceException(ErrorEnum.PARAMS_INVALID, "accountId Cannot be Empty.")
 
-        val filePath = SysConfigContextHolder.getUserDataRootDir() + "/" + accountId + "/" + epubFile.storedFileName
+        val filePath = SysConfigContextHolder.getBookFileDir(accountId) + "/" + epubFile.storedFileName
         if (!FileUtil.exist(filePath)) throw ServiceException(ErrorEnum.PARAMS_INVALID, "Cannot Find File: ${epubFile.storedFileName}")
 
         val epubBook = this.loadEpubFile(filePath)
@@ -66,7 +66,7 @@ class EpubFileService {
         epubFile ?: throw ServiceException(ErrorEnum.PARAMS_INVALID, "ePub File Name Info Cannot be Empty.")
         accountId ?: throw ServiceException(ErrorEnum.PARAMS_INVALID, "accountId Cannot be Empty.")
 
-        val filePath = SysConfigContextHolder.getUserDataRootDir() + "/" + accountId + "/" + epubFile
+        val filePath = SysConfigContextHolder.getBookFileDir(accountId) + "/" + epubFile
         if (!FileUtil.exist(filePath)) throw ServiceException(ErrorEnum.PARAMS_INVALID, "Cannot Find File: $epubFile")
 
         val epubBook = this.loadEpubFile(filePath)

@@ -33,6 +33,11 @@ class SysConfigContextHolder {
         const val COVER_FILE_DIR = "COVER_FILE_DIR"
 
         /**
+         * 配置项-书目文件存储目录
+         */
+        const val BOOK_FILE_DIR = "BOOK_FILE_DIR"
+
+        /**
          * 配置项-系统数据根路径
          */
         const val ROOT_PATH = "ROOT_PATH"
@@ -51,6 +56,11 @@ class SysConfigContextHolder {
          * 默认值-书目封面存储目录
          */
         private const val COVER_FILE_DIR_DEFAULT = "/covers"
+
+        /**
+         * 默认值-书目文件存储目录
+         */
+        private const val BOOK_FILE_DIR_DEFAULT = "/books"
 
         /**
          * 设置配置参数到系统运行时
@@ -110,6 +120,21 @@ class SysConfigContextHolder {
             }
 
             return "$userDataDir/$accountId/$coverFileDir"
+        }
+
+        /**
+         * 获取用户数据-书目文件目录
+         */
+        fun getBookFileDir(accountId: String): String {
+            val userDataDir = this.getUserDataRootDir()
+            var bookFileDir = this.getConfig(BOOK_FILE_DIR)
+            if (StrUtil.isEmptyIfStr(bookFileDir)) {
+                bookFileDir = BOOK_FILE_DIR_DEFAULT
+                SYS_CONFIG_MAP[BOOK_FILE_DIR] = bookFileDir
+                log.warn("Failed to Fetch Value of Config [$COVER_FILE_DIR], Use Default: $bookFileDir")
+            }
+
+            return "$userDataDir/$accountId/$bookFileDir"
         }
 
         /**

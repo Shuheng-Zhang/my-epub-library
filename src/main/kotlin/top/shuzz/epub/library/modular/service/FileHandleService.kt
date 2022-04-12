@@ -72,13 +72,13 @@ class FileHandleService {
         fileList ?: return listOf()
 
         // 检查或创建用户数据目录
-        val accountDataDir = this.checkAccountDataDir(accountId!!)
+        val accountBookDir = this.checkAccountBookDir(accountId!!)
 
         // 将文件移动到用户数据目录
         val completedList = mutableListOf<String>()
         this.checkTargetFilesExisted(fileList).forEach {
             val srcFile = File(it)
-            val destFile = File(accountDataDir + "/" + srcFile.name)
+            val destFile = File(accountBookDir + "/" + srcFile.name)
             FileUtil.move(srcFile, destFile, true)
 
             completedList.add(srcFile.name)
@@ -112,13 +112,13 @@ class FileHandleService {
     }
 
     /**
-     * 检查并创建用户账户数据目录
+     * 检查并创建用户账户书目存储目录
      */
-    private fun checkAccountDataDir(accountId: String): String {
-        val dirPath = SysConfigContextHolder.getUserDataRootDir() + "/" + accountId
+    private fun checkAccountBookDir(accountId: String): String {
+        val dirPath = SysConfigContextHolder.getBookFileDir(accountId)
         if (!FileUtil.exist(dirPath) && !FileUtil.isDirectory(dirPath)) {
             FileUtil.mkdir(dirPath)
-            log.info("Created Account Data Directory [$accountId]")
+            log.info("Created Account Book Directory :$accountId${SysConfigContextHolder.getConfig(SysConfigContextHolder.BOOK_FILE_DIR)}")
         }
 
         return dirPath
