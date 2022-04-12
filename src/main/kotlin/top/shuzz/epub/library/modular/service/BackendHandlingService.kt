@@ -1,12 +1,19 @@
 package top.shuzz.epub.library.modular.service
 
-import cn.hutool.log.LogFactory
+import cn.hutool.core.io.FileUtil
+import cn.hutool.core.util.IdUtil
+import cn.hutool.core.util.StrUtil
 import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Service
 import top.shuzz.epub.library.modular.dto.FileBackendHandleDto
 import javax.annotation.Resource
 import org.springframework.context.annotation.Lazy
+import top.shuzz.epub.library.commons.util.SysConfigContextHolder
 import top.shuzz.epub.library.modular.dto.BookFileNamesDto
+import top.shuzz.epub.library.modular.entity.BookBaseInfo
+import top.shuzz.epub.library.modular.entity.BookDescription
+import top.shuzz.epub.library.modular.entity.BookFileInfo
+import java.io.File
 
 /**
  * 后端处理服务
@@ -16,8 +23,6 @@ import top.shuzz.epub.library.modular.dto.BookFileNamesDto
 @Service
 class BackendHandlingService {
 
-    private val log = LogFactory.get()
-
     @Lazy
     @Resource
     private lateinit var fileHandleService: FileHandleService
@@ -25,6 +30,18 @@ class BackendHandlingService {
     @Lazy
     @Resource
     private lateinit var epubFileService: EpubFileService
+
+    @Lazy
+    @Resource
+    private lateinit var bookBaseInfoService: BookBaseInfoService
+
+    @Lazy
+    @Resource
+    private lateinit var bookDescriptionService: BookDescriptionService
+
+    @Lazy
+    @Resource
+    private lateinit var bookFileInfoService: BookFileInfoService
 
     /**
      * 执行后端处理
@@ -41,19 +58,47 @@ class BackendHandlingService {
         // 将文件移动到用户数据目录
         val movedFileList = fileHandleService.moveFilesToAccountDataDir(movementDto.accountId, movementDto.fileList)
 
-        // 从已移动文件中筛选可解析文件列表
-        val parsableList = mutableListOf<BookFileNamesDto>()
+        // 从已移动文件中筛选可进一步文件列表
+        val processList = mutableListOf<BookFileNamesDto>()
         backendHandleDto.fileList?.forEach {
-            if (movedFileList.contains(it.storedFileName)) { parsableList.add(it) }
+            if (movedFileList.contains(it.storedFileName)) { processList.add(it) }
         }
 
-        // 执行解析
-        parsableList.forEach {
+        // 执行后续处理
+        processList.forEach {
+            // 获取文件容量
+            val fileSize = this.getFileSize(backendHandleDto.accountId, it.storedFileName)
+
+            // 执行解析
             val result = epubFileService.parseEpubFile(backendHandleDto.accountId, it)
-            log.info("Parsed ePub: {}", result.toString())
-            // todo: 存储解析结果
-        }
 
+            // 存储书目文件信息
+            val bookFileId = IdUtil.getSnowflakeNextId()
+            val bookFileInfo = BookFileInfo(id = bookFileId,
+                bookFileName = it.storedFileName, bookFileOriginalName = it.originalFileName,
+                bookCoverUrl = result.coverUrl, bookOpfUrl = result.opfUrl,
+                bookFileSize = fileSize)
+            this.bookFileInfoService.save(bookFileInfo)
+
+            // 存储书目基本信息
+            val bookBaseInfo = BookBaseInfo(bookFileId = bookFileId, bookTitle = result.bookTitle, bookAuthors = result.bookAuthors, epubUid = result.epubUid)
+            this.bookBaseInfoService.save(bookBaseInfo)
+
+            // 存储书目简介
+            if (StrUtil.isNotBlank(result.bookDescription)) this.bookDescriptionService.save(BookDescription(bookFileId = bookFileId, bookDescription = result.bookDescription))
+
+            // todo: 获取并存储 ePub 封面
+            // todo: 创建书目与用户账号关联
+
+        }
     }
 
+    /**
+     * 获取文件容量
+     */
+    private fun getFileSize(accountId: String?, fileName: String?): Long {
+        val filePath = SysConfigContextHolder.getUserDataRootDir() + "/" + accountId + "/" + fileName
+        val file = File(filePath)
+        return FileUtil.size(file)
+    }
 }
