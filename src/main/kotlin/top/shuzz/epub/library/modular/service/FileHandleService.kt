@@ -39,9 +39,7 @@ class FileHandleService {
             throw ServiceException(ErrorEnum.UNSUPPORTED_FILES_ERROR, "Type (*.epub) Supported Only.")
         }
 
-        val fileStorageDir = "${SysConfigContextHolder.getConfig(SysConfigContextHolder.ROOT_PATH)}${
-            SysConfigContextHolder.getConfig(SysConfigContextHolder.UPLOADED_FILE_DIR)
-        }"
+        val fileStorageDir = SysConfigContextHolder.getUploadedFileDir()
 
         val storedFileList = mutableListOf<UploadedFileInfoVo>()
         files.forEach {
