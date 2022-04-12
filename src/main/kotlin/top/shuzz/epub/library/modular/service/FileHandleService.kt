@@ -118,7 +118,7 @@ class FileHandleService {
         val dirPath = SysConfigContextHolder.getBookFileDir(accountId)
         if (!FileUtil.exist(dirPath) && !FileUtil.isDirectory(dirPath)) {
             FileUtil.mkdir(dirPath)
-            log.info("Created Account Book Directory :$accountId${SysConfigContextHolder.getConfig(SysConfigContextHolder.BOOK_FILE_DIR)}")
+            log.info("Created Book Directory for Account: $accountId")
         }
 
         return dirPath
