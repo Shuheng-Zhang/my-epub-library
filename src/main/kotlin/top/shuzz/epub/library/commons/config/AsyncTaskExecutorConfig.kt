@@ -7,7 +7,6 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.scheduling.annotation.EnableAsync
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor
-import java.util.concurrent.Executor
 
 /**
  * 配置异步任务执行器
@@ -54,8 +53,8 @@ class AsyncTaskExecutorConfig {
     @Value("\${async-task-executor.prefix-name}")
     private lateinit var prefixName: String
 
-    @Bean(value = ["async-task-executor"])
-    fun asyncTaskExecutor(): Executor {
+    @Bean("async-task-executor")
+    fun asyncTaskExecutor(): ThreadPoolTaskExecutor {
         val executor = ThreadPoolTaskExecutor()
         executor.corePoolSize = this.checkIntegerValue(corePoolSize, CORE_POOL_SIZE_DEFAULT)
         executor.maxPoolSize = this.checkIntegerValue(maxPoolSize, MAX_POOL_SIZE_DEFAULT)

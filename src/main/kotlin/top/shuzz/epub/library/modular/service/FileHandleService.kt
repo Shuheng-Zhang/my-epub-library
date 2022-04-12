@@ -9,6 +9,8 @@ import org.springframework.web.multipart.MultipartFile
 import top.shuzz.epub.library.commons.exception.ServiceException
 import top.shuzz.epub.library.commons.response.enums.ErrorEnum
 import top.shuzz.epub.library.commons.util.SysConfigContextHolder
+import top.shuzz.epub.library.modular.dto.AccountFilesMovementDto
+import top.shuzz.epub.library.modular.dto.FileBackendHandleDto
 import top.shuzz.epub.library.modular.vo.UploadedFileInfoVo
 import java.io.File
 
@@ -84,6 +86,17 @@ class FileHandleService {
         }
 
         return completedList
+    }
+
+    /**
+     * 获取文件移动列表
+     */
+    fun getFileMovementList(backendHandleDto: FileBackendHandleDto): AccountFilesMovementDto {
+        val movementList = mutableListOf<String>()
+        backendHandleDto.fileList?.forEach { namesDto ->
+            namesDto.storedFileName?.let { movementList.add(it) }
+        }
+        return AccountFilesMovementDto(backendHandleDto.accountId, movementList)
     }
 
     /**

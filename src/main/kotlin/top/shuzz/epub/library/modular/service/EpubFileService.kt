@@ -9,8 +9,8 @@ import org.springframework.stereotype.Service
 import top.shuzz.epub.library.commons.exception.ServiceException
 import top.shuzz.epub.library.commons.response.enums.ErrorEnum
 import top.shuzz.epub.library.commons.util.SysConfigContextHolder
+import top.shuzz.epub.library.modular.dto.BookFileNamesDto
 import top.shuzz.epub.library.modular.dto.EpubMetaInfoDto
-import top.shuzz.epub.library.modular.vo.UploadedFileInfoVo
 import java.io.FileInputStream
 
 /**
@@ -29,7 +29,7 @@ class EpubFileService {
      * @param accountId 用户账号ID
      * @param epubFile 目标文件
      */
-    fun parseEpubFile(accountId: String?, epubFile: UploadedFileInfoVo?): EpubMetaInfoDto {
+    fun parseEpubFile(accountId: String?, epubFile: BookFileNamesDto?): EpubMetaInfoDto {
         epubFile ?: throw ServiceException(ErrorEnum.PARAMS_INVALID, "ePub File Path Cannot be Empty.")
         accountId ?: throw ServiceException(ErrorEnum.PARAMS_INVALID, "accountId Cannot be Empty.")
 

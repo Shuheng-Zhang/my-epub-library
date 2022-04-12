@@ -7,9 +7,11 @@ import org.springframework.web.bind.annotation.RequestPart
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
 import top.shuzz.epub.library.commons.response.ResponseData
-import top.shuzz.epub.library.modular.dto.AccountFilesMovementDto
+import top.shuzz.epub.library.modular.dto.FileBackendHandleDto
 import top.shuzz.epub.library.modular.service.FileHandleService
 import javax.annotation.Resource
+import org.springframework.context.annotation.Lazy
+import top.shuzz.epub.library.modular.service.BackendHandlingService
 
 /**
  * @author heng
@@ -19,8 +21,13 @@ import javax.annotation.Resource
 @RequestMapping(value = ["/file-handler"])
 class FileHandleController {
 
+    @Lazy
     @Resource
     private lateinit var fileHandleService: FileHandleService
+
+    @Lazy
+    @Resource
+    private lateinit var backendHandlingService: BackendHandlingService
 
     @PostMapping(value = ["upload"])
     fun uploadFiles(@RequestPart(value = "files", required = true) files: List<MultipartFile>): ResponseData {
@@ -28,12 +35,10 @@ class FileHandleController {
         return ResponseData.success(stored)
     }
 
-    @PostMapping(value = ["move"])
-    fun moveFilesToAccountDataDir(@RequestBody movementDto: AccountFilesMovementDto): ResponseData {
-        val completedList = this.fileHandleService.moveFilesToAccountDataDir(movementDto.accountId, movementDto.fileList)
 
-        // todo: 将处理完成的文件记录写入到数据库
-
-        return ResponseData.success(completedList)
+    @PostMapping(value = ["backend-handle"])
+    fun backendHandler(@RequestBody fileHandleDto: FileBackendHandleDto): ResponseData {
+        backendHandlingService.execFileBackendHandle(fileHandleDto)
+        return ResponseData.success()
     }
 }

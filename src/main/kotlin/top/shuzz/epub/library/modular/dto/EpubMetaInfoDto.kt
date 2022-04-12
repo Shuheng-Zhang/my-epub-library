@@ -11,4 +11,8 @@ data class EpubMetaInfoDto(
     var epubUid: String? = null,
     var coverUrl: String? = null,
     var opfUrl: String? = null
-)
+) {
+    override fun toString(): String {
+        return "EpubMetaInfoDto(bookTitle=$bookTitle, bookAuthors=$bookAuthors, bookDescription=$bookDescription, epubUid=$epubUid, coverUrl=$coverUrl, opfUrl=$opfUrl)"
+    }
+}
