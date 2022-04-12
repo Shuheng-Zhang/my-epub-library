@@ -30,10 +30,10 @@ class EpubFileService {
      * @param epubFile 目标文件
      */
     fun parseEpubFile(accountId: String?, epubFile: BookFileNamesDto?): EpubMetaInfoDto {
-        epubFile ?: throw ServiceException(ErrorEnum.PARAMS_INVALID, "ePub File Path Cannot be Empty.")
+        epubFile ?: throw ServiceException(ErrorEnum.PARAMS_INVALID, "ePub File Name Info Cannot be Empty.")
+        epubFile.storedFileName ?: throw ServiceException(ErrorEnum.PARAMS_INVALID, "ePub File Stored File Name Cannot be Empty.")
+        epubFile.originalFileName ?: throw ServiceException(ErrorEnum.PARAMS_INVALID, "ePub Original File Name Cannot be Empty.")
         accountId ?: throw ServiceException(ErrorEnum.PARAMS_INVALID, "accountId Cannot be Empty.")
-
-        // todo 通过数据库检查用户账号ID
 
         val filePath = SysConfigContextHolder.getUserDataRootDir() + "/" + accountId + "/" + epubFile.storedFileName
         if (!FileUtil.exist(filePath)) throw ServiceException(ErrorEnum.PARAMS_INVALID, "Cannot Find File: ${epubFile.storedFileName}")
