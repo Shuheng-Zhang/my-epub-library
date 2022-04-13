@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.shuzz.epub.library.modular.mapper.BookInfoQueryMapper">
+
+<select id="queryBookBaseInfo" resultType="top.shuzz.epub.library.modular.vo.BookBaseInfoVo">
+    select abl.id, abl.created_time,
+           bbi.book_title, bbi.book_authors,
+           bfi.book_cover_outside_url
+    from book_file_info bfi
+             left join account_book_link abl on bfi.id = abl.book_file_id
+             left join book_base_info bbi on bbi.book_file_id = bfi.id
+    <where>
+        abl.account_id = #{accountId} and deleted = 0
+        <if test="bookTitle != null and bookTitle != ''">
+            and bbi.book_title like concat(#{bookTitle}, '%')
+        </if>
+        <if test="bookAuthors != null and bookAuthors != ''">
+            and bbi.book_authors like concat('%', #{bookAuthors}, '%')
+        </if>
+    </where>
+    order by abl.id desc
+</select>
+</mapper>
