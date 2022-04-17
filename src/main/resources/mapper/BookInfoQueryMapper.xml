@@ -20,4 +20,15 @@
     </where>
     order by abl.id desc
 </select>
+
+<select id="queryBookDetailInfo" resultType="top.shuzz.epub.library.modular.vo.BookDetailInfoVo">
+    select abl.id, abl.created_time,
+           bbi.book_title, bbi.book_authors,
+           bfi.book_cover_outside_url, bd.book_description, bfi.book_file_size, bfi.book_unpacked_size
+    from book_file_info bfi
+             left join account_book_link abl on bfi.id = abl.book_file_id
+             left join book_base_info bbi on bbi.book_file_id = bfi.id
+             left join book_description bd on bd.book_file_id = bfi.id
+    where abl.id = #{linkId} and deleted = 0;
+</select>
 </mapper>

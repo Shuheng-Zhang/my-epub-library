@@ -5,8 +5,10 @@ import org.springframework.web.bind.annotation.RestController
 import top.shuzz.epub.library.modular.service.BookInfoQueryService
 import javax.annotation.Resource
 import org.springframework.context.annotation.Lazy
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestParam
 import top.shuzz.epub.library.commons.response.ResponseData
 import top.shuzz.epub.library.modular.dto.BookInfoQueryDto
 
@@ -25,6 +27,12 @@ class BookInfoQueryController {
     @PostMapping(value = ["base"])
     fun getBookBaseInfoByPage(@RequestBody queryDto: BookInfoQueryDto): ResponseData {
         val result = this.bookInfoQueryService.fetchBookBaseInfoByPage(queryDto)
+        return ResponseData.success(result)
+    }
+
+    @GetMapping(value = ["detail"])
+    fun getBookDetailInfo(@RequestParam(name = "linkId", required = true) linkId: String): ResponseData {
+        val result = this.bookInfoQueryService.fetchBookDetailInfo(linkId)
         return ResponseData.success(result)
     }
 }

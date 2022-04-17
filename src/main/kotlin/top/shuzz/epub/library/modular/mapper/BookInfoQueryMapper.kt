@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page
 import org.apache.ibatis.annotations.Mapper
 import org.apache.ibatis.annotations.Param
 import top.shuzz.epub.library.modular.vo.BookBaseInfoVo
+import top.shuzz.epub.library.modular.vo.BookDetailInfoVo
 
 /**
  * @author heng
@@ -23,4 +24,9 @@ interface BookInfoQueryMapper {
                           @Param("accountId") accountId: Long?,
                           @Param("bookTitle") bookTitleLike: String?,
                           @Param("bookAuthors") bookAuthorsLike: String?): IPage<BookBaseInfoVo>
+
+    /**
+     * 查询书目详细信息
+     */
+    fun queryBookDetailInfo(linkId: Long?): BookDetailInfoVo
 }

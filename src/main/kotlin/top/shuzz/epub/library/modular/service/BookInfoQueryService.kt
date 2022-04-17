@@ -8,6 +8,7 @@ import top.shuzz.epub.library.commons.response.PageResultVo
 import top.shuzz.epub.library.commons.util.MybatisPlusUtil
 import top.shuzz.epub.library.modular.dto.BookInfoQueryDto
 import top.shuzz.epub.library.modular.vo.BookBaseInfoVo
+import top.shuzz.epub.library.modular.vo.BookDetailInfoVo
 
 /**
  * @author heng
@@ -38,5 +39,12 @@ class BookInfoQueryService {
         }
 
         return pageResult
+    }
+
+    /**
+     * 查询书目详情
+     */
+    fun fetchBookDetailInfo(linkId: String?): BookDetailInfoVo? {
+        return this.bookInfoQueryMapper.queryBookDetailInfo(linkId?.toLong())
     }
 }
